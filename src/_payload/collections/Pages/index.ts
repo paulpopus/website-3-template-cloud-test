@@ -1,7 +1,5 @@
 import type { CollectionConfig } from 'payload/types'
 
-import type { Page } from '../../../payload-types'
-
 import { admins } from '../../access/admins'
 import { usersOrPublished } from '../../access/usersOrPublished'
 import { Archive } from '../../blocks/ArchiveBlock'
@@ -82,7 +80,9 @@ export const Pages: CollectionConfig = {
   },
   versions: {
     drafts: {
-      autosave: true,
+      autosave: {
+        interval: 350, // We set this interval for optimal live preview
+      },
     },
     maxPerDoc: 50,
   },

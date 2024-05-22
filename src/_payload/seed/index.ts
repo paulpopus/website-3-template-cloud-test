@@ -12,7 +12,7 @@ import { image2 } from './image-2'
 import { post1 } from './post-1'
 import { post2 } from './post-2'
 import { post3 } from './post-3'
-import { postsPage } from './posts-page'
+
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
@@ -42,18 +42,18 @@ export const seed = async (payload: Payload): Promise<void> => {
 
   // clear the database
   await Promise.all([
-    ...collections.map(async (collection) =>
+    ...collections.map((collection) =>
       payload.delete({
         collection: collection as 'media',
         where: {},
       }),
-    ), // eslint-disable-line function-paren-newline
-    ...globals.map(async (global) =>
+    ),
+    ...globals.map((global) =>
       payload.updateGlobal({
         slug: global as 'header',
         data: {},
       }),
-    ), // eslint-disable-line function-paren-newline
+    ),
   ])
 
   payload.logger.info(`— Seeding demo author and user...`)
@@ -71,7 +71,7 @@ export const seed = async (payload: Payload): Promise<void> => {
     }),
   )
 
-  const [demoAuthor, demoUser] = await Promise.all([
+  const [demoAuthor] = await Promise.all([
     await payload.create({
       collection: 'users',
       data: {
@@ -93,20 +93,29 @@ export const seed = async (payload: Payload): Promise<void> => {
   ])
 
   let demoAuthorID = demoAuthor.id
-  const demoUserID = demoUser.id
 
   payload.logger.info(`— Seeding media...`)
 
-  const [image1Doc, image2Doc] = await Promise.all([
+  const [image1Doc, image2Doc, image3Doc, imageHomeDoc] = await Promise.all([
     await payload.create({
       collection: 'media',
       data: image1,
-      filePath: path.resolve(dirname, 'image-1.jpg'),
+      filePath: path.resolve(dirname, 'image-post1.webp'),
     }),
     await payload.create({
       collection: 'media',
       data: image2,
-      filePath: path.resolve(dirname, 'image-2.jpg'),
+      filePath: path.resolve(dirname, 'image-post2.webp'),
+    }),
+    await payload.create({
+      collection: 'media',
+      data: image2,
+      filePath: path.resolve(dirname, 'image-post3.webp'),
+    }),
+    await payload.create({
+      collection: 'media',
+      data: image2,
+      filePath: path.resolve(dirname, 'image-hero1.webp'),
     }),
   ])
 
@@ -153,10 +162,14 @@ export const seed = async (payload: Payload): Promise<void> => {
 
   let image1ID = image1Doc.id
   let image2ID = image2Doc.id
+  let image3ID = image3Doc.id
+  let imageHomeID = imageHomeDoc.id
 
   if (payload.db.defaultIDType === 'text') {
     image1ID = `"${image1Doc.id}"`
     image2ID = `"${image2Doc.id}"`
+    image3ID = `"${image3Doc.id}"`
+    imageHomeID = `"${imageHomeDoc.id}"`
     demoAuthorID = `"${demoAuthorID}"`
   }
 
@@ -168,7 +181,8 @@ export const seed = async (payload: Payload): Promise<void> => {
     collection: 'posts',
     data: JSON.parse(
       JSON.stringify({ ...post1, categories: [technologyCategory.id] })
-        .replace(/"\{\{IMAGE\}\}"/g, image1ID)
+        .replace(/"\{\{IMAGE_1\}\}"/g, image1ID)
+        .replace(/"\{\{IMAGE_2\}\}"/g, image2ID)
         .replace(/"\{\{AUTHOR\}\}"/g, demoAuthorID),
     ),
   })
@@ -177,7 +191,8 @@ export const seed = async (payload: Payload): Promise<void> => {
     collection: 'posts',
     data: JSON.parse(
       JSON.stringify({ ...post2, categories: [newsCategory.id] })
-        .replace(/"\{\{IMAGE\}\}"/g, image1ID)
+        .replace(/"\{\{IMAGE_1\}\}"/g, image2ID)
+        .replace(/"\{\{IMAGE_2\}\}"/g, image3ID)
         .replace(/"\{\{AUTHOR\}\}"/g, demoAuthorID),
     ),
   })
@@ -186,12 +201,11 @@ export const seed = async (payload: Payload): Promise<void> => {
     collection: 'posts',
     data: JSON.parse(
       JSON.stringify({ ...post3, categories: [financeCategory.id] })
-        .replace(/"\{\{IMAGE\}\}"/g, image1ID)
+        .replace(/"\{\{IMAGE_1\}\}"/g, image3ID)
+        .replace(/"\{\{IMAGE_2\}\}"/g, image1ID)
         .replace(/"\{\{AUTHOR\}\}"/g, demoAuthorID),
     ),
   })
-
-  const posts = [post1Doc, post2Doc, post3Doc]
 
   // update each post with related posts
 
@@ -219,28 +233,14 @@ export const seed = async (payload: Payload): Promise<void> => {
     }),
   ])
 
-  payload.logger.info(`— Seeding posts page...`)
-
-  const postsPageDoc = await payload.create({
-    collection: 'pages',
-    data: JSON.parse(JSON.stringify(postsPage).replace(/"\{\{IMAGE\}\}"/g, image1ID)),
-  })
-
-  let postsPageID = postsPageDoc.id
-
-  if (payload.db.defaultIDType === 'text') {
-    postsPageID = `"${postsPageID}"`
-  }
-
   payload.logger.info(`— Seeding home page...`)
 
   await payload.create({
     collection: 'pages',
     data: JSON.parse(
       JSON.stringify(home)
-        .replace(/"\{\{IMAGE_1\}\}"/g, image1ID)
-        .replace(/"\{\{IMAGE_2\}\}"/g, image2ID)
-        .replace(/"\{\{POSTS_PAGE_ID\}\}"/g, postsPageID),
+        .replace(/"\{\{IMAGE_1\}\}"/g, imageHomeID)
+        .replace(/"\{\{IMAGE_2\}\}"/g, image2ID),
     ),
   })
 
@@ -274,12 +274,9 @@ export const seed = async (payload: Payload): Promise<void> => {
       navItems: [
         {
           link: {
-            type: 'reference',
+            type: 'custom',
             label: 'Posts',
-            reference: {
-              relationTo: 'pages',
-              value: postsPageDoc.id,
-            },
+            url: '/posts',
           },
         },
         {

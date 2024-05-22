@@ -34,12 +34,10 @@ export const Card: React.FC<{
   const href = `/${relationTo}/${slug}`
 
   return (
-    <article className={cn('border border-border rounded-lg overflow-hidden', className)}>
+    <article className={cn('border border-border rounded-lg overflow-hidden bg-card', className)}>
       <Link className="relative h-full w-full " href={href}>
         {!metaImage && <div className="classes.placeholder">No image</div>}
-        {metaImage && typeof metaImage !== 'string' && (
-          <Media imgClassName="classes.image" resource={metaImage} />
-        )}
+        {metaImage && typeof metaImage !== 'string' && <Media resource={metaImage} size="360px" />}
       </Link>
       <div className="p-4">
         {showCategories && hasCategories && (

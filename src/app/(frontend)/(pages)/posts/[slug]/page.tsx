@@ -12,6 +12,7 @@ import type { Post } from '../../../../../payload-types'
 import { PayloadRedirects } from '../../../../components/PayloadRedirects'
 import { PostHero } from '../../../../heros/PostHero'
 import { generateMeta } from '../../../../utilities/generateMeta'
+import PageClient from './page.client'
 
 export async function generateStaticParams() {
   const payload = await getPayloadHMR({ config: configPromise })
@@ -35,9 +36,19 @@ export default async function Post({ params: { slug = '' } }) {
 
   return (
     <article className="pt-16 pb-16">
+      <PageClient />
       <PayloadRedirects url={url} />
       <PostHero post={post} />
-      <RichText content={post.content} />
+
+      <div className="flex flex-col gap-4 pt-8">
+        <div className="container lg:grid lg:grid-cols-[1fr_48rem_1fr] grid-rows-[1fr]">
+          <RichText
+            className="lg:grid lg:grid-cols-subgrid col-start-1 col-span-3 grid-rows-[1fr]"
+            content={post.content}
+            enableGutter={false}
+          />
+        </div>
+      </div>
     </article>
   )
 }

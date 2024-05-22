@@ -1,30 +1,20 @@
-import Link from 'next/link'
-import React, { Fragment } from 'react'
+import { formatDateTime } from '@/utilities/formatDateTime'
+import React from 'react'
 
 import type { Post } from '../../../payload-types'
 
-import { Gutter } from '../../components/Gutter'
 import { Media } from '../../components/Media'
-import RichText from '../../components/RichText'
-import { formatDateTime } from '../../utilities/formatDateTime'
 
 export const PostHero: React.FC<{
   post: Post
 }> = ({ post }) => {
-  const {
-    id,
-    categories,
-    meta: { description, image: metaImage } = {},
-    populatedAuthors,
-    publishedAt,
-    title,
-  } = post
+  const { categories, meta: { image: metaImage } = {}, populatedAuthors, publishedAt, title } = post
 
   return (
-    <div className="classes.postHero">
-      <div className="classes.content">
-        <div className="classes.leader">
-          <div className="classes.categories">
+    <div className="relative -mt-[10.4rem] flex items-end">
+      <div className="container z-10 relative lg:grid lg:grid-cols-[1fr_48rem_1fr] text-white pb-8">
+        <div className="col-start-1 col-span-1 md:col-start-2 md:col-span-2">
+          <div className="uppercase text-sm mb-6">
             {categories?.map((category, index) => {
               if (typeof category === 'object' && category !== null) {
                 const { title: categoryTitle } = category
@@ -34,65 +24,64 @@ export const PostHero: React.FC<{
                 const isLast = index === categories.length - 1
 
                 return (
-                  <Fragment key={index}>
+                  <React.Fragment key={index}>
                     {titleToUse}
-                    {!isLast && <Fragment>, &nbsp;</Fragment>}
-                  </Fragment>
+                    {!isLast && <React.Fragment>, &nbsp;</React.Fragment>}
+                  </React.Fragment>
                 )
               }
               return null
             })}
           </div>
-        </div>
-        <h1 className="classes.title">{title}</h1>
-        <p className="classes.meta">
-          {populatedAuthors && (
-            <Fragment>
-              {'By '}
-              {populatedAuthors.map((author, index) => {
-                const { name } = author
 
-                const isLast = index === populatedAuthors.length - 1
-                const secondToLast = index === populatedAuthors.length - 2
+          <div className="">
+            <h1 className="mb-6 text-3xl md:text-5xl lg:text-6xl">{title}</h1>
+          </div>
 
-                return (
-                  <Fragment key={index}>
-                    {name}
-                    {secondToLast && populatedAuthors.length > 2 && <Fragment>, </Fragment>}
-                    {secondToLast && populatedAuthors.length === 2 && <Fragment> </Fragment>}
-                    {!isLast && populatedAuthors.length > 1 && <Fragment>and </Fragment>}
-                  </Fragment>
-                )
-              })}
-            </Fragment>
-          )}
-          {publishedAt && (
-            <Fragment>
-              {' on '}
-              {formatDateTime(publishedAt)}
-            </Fragment>
-          )}
-        </p>
-        <div>
-          <p className="classes.description">
-            {`${description ? `${description} ` : ''}To edit this post, `}
-            <Link href={`${process.env.NEXT_PUBLIC_SERVER_URL}/admin/collections/posts/${id}`}>
-              navigate to the admin dashboard
-            </Link>
-            .
-          </p>
+          <div className="flex flex-col md:flex-row gap-4 md:gap-16">
+            <div className="flex flex-col gap-4">
+              {populatedAuthors && (
+                <div className="flex flex-col gap-1">
+                  <p className="text-sm">Author</p>
+                  {populatedAuthors.map((author, index) => {
+                    const { name } = author
+
+                    const isLast = index === populatedAuthors.length - 1
+                    const secondToLast = index === populatedAuthors.length - 2
+
+                    return (
+                      <React.Fragment key={index}>
+                        {name}
+                        {secondToLast && populatedAuthors.length > 2 && (
+                          <React.Fragment>, </React.Fragment>
+                        )}
+                        {secondToLast && populatedAuthors.length === 2 && (
+                          <React.Fragment> </React.Fragment>
+                        )}
+                        {!isLast && populatedAuthors.length > 1 && (
+                          <React.Fragment>and </React.Fragment>
+                        )}
+                      </React.Fragment>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+            {publishedAt && (
+              <div className="flex flex-col gap-1">
+                <p className="text-sm">Date Published</p>
+
+                <time dateTime={publishedAt}>{formatDateTime(publishedAt)}</time>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-      <div className="classes.media">
-        <div className="relative">
-          {!metaImage && <div className="classes.placeholder">No image</div>}
-          {metaImage && typeof metaImage !== 'string' && (
-            <Media fill imgClassName="classes.image" resource={metaImage} />
-          )}
-        </div>
-        {metaImage && typeof metaImage !== 'string' && metaImage?.caption && (
-          <RichText className="classes.caption" content={metaImage.caption} enableGutter={false} />
+      <div className="min-h-[80vh] select-none">
+        {metaImage && typeof metaImage !== 'string' && (
+          <Media fill imgClassName="-z-10 object-cover" resource={metaImage} />
         )}
+        <div className="absolute pointer-events-none left-0 bottom-0 w-full h-1/2 bg-gradient-to-t from-black to-transparent" />
       </div>
     </div>
   )

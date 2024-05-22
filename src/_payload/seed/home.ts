@@ -8,14 +8,18 @@ export const home: Partial<Page> = {
     links: [
       {
         link: {
-          type: 'reference',
+          type: 'custom',
           appearance: 'default',
           label: 'All posts',
-          reference: {
-            relationTo: 'pages',
-            value: '{{POSTS_PAGE_ID}}',
-          },
-          url: '',
+          url: '/posts',
+        },
+      },
+      {
+        link: {
+          type: 'custom',
+          appearance: 'outline',
+          label: 'Contact',
+          url: '/contact',
         },
       },
     ],
@@ -577,14 +581,10 @@ export const home: Partial<Page> = {
       links: [
         {
           link: {
-            type: 'reference',
+            type: 'custom',
             appearance: 'default',
             label: 'All posts',
-            reference: {
-              relationTo: 'pages',
-              value: '{{POSTS_PAGE_ID}}',
-            },
-            url: '',
+            url: '/posts',
           },
         },
       ],

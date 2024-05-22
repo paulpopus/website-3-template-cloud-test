@@ -20,7 +20,6 @@ export interface Config {
     'payload-migrations': PayloadMigration;
   };
   globals: {
-    settings: Settings;
     header: Header;
     footer: Footer;
   };
@@ -64,7 +63,7 @@ export interface Page {
             } | null;
             url?: string | null;
             label: string;
-            appearance?: ('default' | 'ghost' | 'secondary') | null;
+            appearance?: ('default' | 'outline') | null;
           };
           id?: string | null;
         }[]
@@ -73,7 +72,6 @@ export interface Page {
   };
   layout: (
     | {
-        invertBackground?: boolean | null;
         richText?: {
           root: {
             type: string;
@@ -100,7 +98,7 @@ export interface Page {
                 } | null;
                 url?: string | null;
                 label: string;
-                appearance?: ('default' | 'secondary' | 'ghost') | null;
+                appearance?: ('default' | 'outline') | null;
               };
               id?: string | null;
             }[]
@@ -110,7 +108,6 @@ export interface Page {
         blockType: 'cta';
       }
     | {
-        invertBackground?: boolean | null;
         columns?:
           | {
               size?: ('oneThird' | 'half' | 'twoThirds' | 'full') | null;
@@ -139,7 +136,7 @@ export interface Page {
                 } | null;
                 url?: string | null;
                 label: string;
-                appearance?: ('default' | 'ghost' | 'secondary') | null;
+                appearance?: ('default' | 'outline') | null;
               };
               id?: string | null;
             }[]
@@ -149,7 +146,6 @@ export interface Page {
         blockType: 'content';
       }
     | {
-        invertBackground?: boolean | null;
         position?: ('default' | 'fullscreen') | null;
         media: string | Media;
         id?: string | null;
@@ -579,16 +575,6 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "settings".
- */
-export interface Settings {
-  id: string;
-  postsPage?: (string | null) | Page;
-  updatedAt?: string | null;
-  createdAt?: string | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header".
  */
 export interface Header {
@@ -634,6 +620,31 @@ export interface Footer {
     | null;
   updatedAt?: string | null;
   createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BannerBlock".
+ */
+export interface BannerBlock {
+  style: 'info' | 'warning' | 'error' | 'success';
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: string;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'banner';
 }
 
 
