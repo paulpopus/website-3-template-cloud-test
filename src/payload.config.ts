@@ -59,6 +59,25 @@ export default buildConfig({
         ItalicFeature(),
         LinkFeature({
           enabledCollections: ['pages', 'posts'],
+          fields: ({ defaultFields }) => {
+            const defaultFieldsWithoutUrl = defaultFields.filter((field) => {
+              if ('name' in field && field.name === 'url') return false
+              return true
+            })
+
+            return [
+              ...defaultFieldsWithoutUrl,
+              {
+                type: 'text',
+                name: 'url',
+                label: ({ t }) => t('fields:enterURL'),
+                required: true,
+                admin: {
+                  condition: ({ linkType }) => linkType !== 'internal',
+                },
+              },
+            ]
+          },
         }),
       ]
     },
