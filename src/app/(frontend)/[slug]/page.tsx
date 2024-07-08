@@ -1,15 +1,16 @@
 import type { Metadata } from 'next'
 
+import { PayloadRedirects } from '@/components/PayloadRedirects'
 import configPromise from '@payload-config'
 import { getPayloadHMR } from '@payloadcms/next/utilities'
 import { draftMode, headers } from 'next/headers'
+import { notFound } from 'next/navigation'
 import React from 'react'
 
 import type { Page } from '../../../payload-types'
 
 import { Blocks } from '../../components/Blocks'
 import { Hero } from '../../components/Hero'
-import { PayloadRedirects } from '../../components/PayloadRedirects'
 import { generateMeta } from '../../utilities/generateMeta'
 
 export async function generateStaticParams() {
@@ -39,6 +40,9 @@ export default async function Page({ params: { slug = 'home' } }) {
 
   return (
     <article className="pt-16 pb-24">
+      {/* Allows redirects for valid pages too */}
+      <PayloadRedirects disableNotFound url={url} />
+
       <Hero {...hero} />
       <Blocks blocks={layout} />
     </article>
